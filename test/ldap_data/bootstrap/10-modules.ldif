@@ -1,0 +1,7 @@
+#type: modify
+#db: cn=config
+dn: cn=module{0},cn=config
+changetype: modify
+add: olcModuleLoad
+olcModuleLoad: memberof.so
+olcModuleLoad: refint.so

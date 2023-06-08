@@ -1,0 +1,50 @@
+#!/bin/sh
+set -eux
+
+# Find action type defined with comment "#type: "
+# e.g. "#type: add" or "#type: modify"
+parse_exec() {
+	type="$(grep -E '^#type:' "$1" | tail -1 | sed 's/#type:[ ]*//')"
+	if [ "${type}" = add ]; then
+		echo slapadd
+	elif [ "${type}" = modify ]; then
+		echo slapmodify
+	elif [ -z "${type}" ]; then
+		echo "${1}: no action type defined" 1>&2
+		return 1
+	else
+		echo "$1: unknown action type \"${type}\"" 1>&2
+		return 1
+	fi
+}
+
+# Find OpenLDAP database to use defined with comment "#db: "
+# e.g. "#db: cn=config" or "#db: dc=localhost,dc=priv"
+parse_db() {
+	db="$(grep -E '^#db:' "$1" | tail -1 | sed 's/#db:[ ]*//')"
+	if [ -z "${db}" ]; then
+		echo "${1}: no db provided" 1>&2
+		return 1
+	fi
+	echo "${db}"
+}
+
+for k in /bootstrap/*.ldif; do
+	if grep -qxF "${k}" /var/lib/bootstrap.txt; then
+		# File already loaded
+		continue
+	fi
+
+	exe="$(parse_exec "${k}")"
+	db="$(parse_db "${k}")"
+	"${exe}" -b "${db}" -F /etc/openldap/slapd.d -l "${k}"
+
+	# Mark file as done
+	echo "${k}" >>/var/lib/bootstrap.txt
+done
+
+# Check configuration
+slaptest -F /etc/openldap/slapd.d -u
+
+# Run slapd
+exec slapd -h 'ldap:// ldaps:// ldapi://' -F /etc/openldap/slapd.d "$@"

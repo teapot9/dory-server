@@ -1,0 +1,7 @@
+#type: add
+#db: dc=localhost,dc=priv
+dn: dc=localhost,dc=priv
+objectClass: dcObject
+objectClass: organization
+o: dory
+dc: localhost

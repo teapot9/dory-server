@@ -119,21 +119,13 @@ func createOpenLDAPContainer(pool *dockertest.Pool, network *dockertest.Network)
 	}
 
 	path = strings.TrimSuffix(path, "/tests")
+	dockerfile := path + "/ldap_data/Dockerfile"
 
-	ressource, err = pool.RunWithOptions(&dockertest.RunOptions{
+	ressource, err = pool.BuildAndRunWithOptions(dockerfile, &dockertest.RunOptions{
 		Name:       "dory_test_openldap",
-		Repository: "osixia/openldap",
-		Tag:        "1.5.0",
 		Networks:   []*dockertest.Network{network},
-		Env: []string{
-			"LDAP_TLS_VERIFY_CLIENT=never",
-			"LDAP_ORGANISATION=localhost",
-			"LDAP_DOMAIN=localhost.priv",
-			"LDAP_ADMIN_PASSWORD=admin",
-		},
 		Mounts: []string{
-			path + "/ldap_data/config:/etc/ldap/slapd.d",
-			path + "/ldap_data/data:/var/lib/ldap",
+			path + "/ldap_data/bootstrap:/bootstrap:ro",
 		},
 	})
 	return

@@ -1,0 +1,24 @@
+#type: modify
+#db: cn=config
+dn: cn=config
+changetype: modify
+add: olcTLSCipherSuite
+olcTLSCipherSuite: HIGH
+-
+add: olcTLSCACertificateFile
+olcTLSCACertificateFile: /etc/openldap/certs/ca.crt
+-
+add: olcTLSCertificateFile
+olcTLSCertificateFile: /etc/openldap/certs/ldaps.crt
+-
+add: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /etc/openldap/certs/ldaps.key
+-
+add: olcTLSProtocolMin
+olcTLSProtocolMin: 3.3
+-
+add: olcTLSVerifyClient
+olcTLSVerifyClient: allow
+-
+add: olcTLSCRLCheck
+olcTLSCRLCheck: none
