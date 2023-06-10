@@ -33,8 +33,10 @@ Must be name `configuration.json`. Content :
     "database_path": ""
   },
   "totp": {
+    "kind": "db|openldap",
     "secret": "your_custom_key_here_which_is_at_least_25_characters_long",
-    "custom_service_name": "TOTP display name (leave blank for auto)"
+    "custom_service_name": "TOTP display name (leave blank for auto)",
+    "openldap_params_dn": "config_dn_for_otp_overlay"
   },
   "features": {
     "disable_unlock": false,

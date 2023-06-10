@@ -1,0 +1,13 @@
+#type: add
+#db: dc=localhost,dc=priv
+dn: cn=otp,dc=localhost,dc=priv
+objectClass: oathTOTPParams
+objectClass: top
+objectClass: person
+cn: otp
+sn: OTP Configuration
+oathOTPLength: 6
+oathTOTPTimeStepPeriod: 30
+oathTOTPTimeStepWindow: 8
+# Choose SHA1, algorithm OIDs are specified in RFC 8018
+oathHMACAlgorithm: 1.2.840.113549.2.7

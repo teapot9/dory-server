@@ -1,0 +1,10 @@
+#type: add
+#db: dc=localhost,dc=priv
+dn: cn=otpuser-disabled,dc=localhost,dc=priv
+sn: Test User OTP (disabled)
+cn: otpuser-disabled
+objectClass: simpleSecurityObject
+objectClass: person
+objectClass: extensibleObject
+email: test@localhost.com
+userPassword: test

@@ -2,8 +2,6 @@ package tests
 
 import (
 	"encoding/json"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/ory/dockertest/v3"
 	"log"
 	"os"
 	"os/exec"
@@ -11,28 +9,34 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"github.com/ory/dockertest/v3"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/be-ys-cloud/dory-server/internal/structures"
+	"github.com/be-ys-cloud/dory-server/test/helpers"
 )
 
 var baseUrl string
 var mailUrl string
+var config structures.Configuration
+var containers helpers.ContainersEnvironment
 
 // TestMain contains only the minimum required to start test suite.
 func TestMain(m *testing.M) {
 	// Generate stack
-	pool, network, ldapServer, mail, server, err := setupEnv()
+	err := setupEnv()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	// Set variables that will be used by other test files !
-	baseUrl = "http://127.0.0.1:" + server.GetPort("8000/tcp") + "/"
-	mailUrl = "http://127.0.0.1:" + mail.GetPort("1080/tcp") + "/api/emails"
+	baseUrl = "http://127.0.0.1:" + containers.Server.GetPort("8000/tcp") + "/"
+	mailUrl = "http://127.0.0.1:" + containers.Mail.GetPort("1080/tcp") + "/api/emails"
 
 	// Run tests
 	_ = m.Run()
 
 	// Destroy stack
-	err = destroyEnv(pool, network, ldapServer, mail, server)
+	err = destroyEnv(containers.Pool, containers.Network, containers.LDAP, containers.Mail, containers.Server)
 	if err != nil {
 		log.Fatalln("Could not destroy stack")
 	}
@@ -40,29 +44,33 @@ func TestMain(m *testing.M) {
 
 //--------------- All-in-one methods
 
-func setupEnv() (pool *dockertest.Pool, network *dockertest.Network, ldap *dockertest.Resource, mail *dockertest.Resource, server *dockertest.Resource, err error) {
+func setupEnv() (err error) {
 
-	pool, err = createPool()
+	containers.Pool, err = createPool()
 	if err != nil {
 		return
 	}
 
-	network, err = pool.CreateNetwork("dory-tests")
+	containers.Network, err = containers.Pool.CreateNetwork("dory-tests")
 	if err != nil {
 		return
 	}
 
-	ldap, err = createOpenLDAPContainer(pool, network)
+	containers.LDAP, err = createOpenLDAPContainer(containers.Pool, containers.Network)
 	if err != nil {
 		return
 	}
 
-	mail, err = createMailContainer(pool, network)
+	containers.Mail, err = createMailContainer(containers.Pool, containers.Network)
 	if err != nil {
 		return
 	}
 
-	server, err = createServerContainer(pool, network, ldap.GetPort("636/tcp"), mail.GetPort("1025/tcp"))
+	containers.Server, err = createServerContainer(
+		containers.Pool, containers.Network,
+		containers.LDAP.GetPort("636/tcp"),
+		containers.Mail.GetPort("1025/tcp"),
+	)
 	if err != nil {
 		return
 	}
@@ -145,9 +153,9 @@ func createServerContainer(pool *dockertest.Pool, network *dockertest.Network, l
 	ldapPortInt, _ := strconv.Atoi(ldapPort)
 	mailPortInt, _ := strconv.Atoi(mailPort)
 
-	configuration := configuration{
-		LDAPServer: configurationLdap{
-			Admin: configurationLdapAdmin{
+	config = structures.Configuration{
+		LDAPServer: structures.LDAPServerConfig{
+			Admin: structures.LDAPServerAdmin{
 				Username: "cn=admin,dc=localhost,dc=priv",
 				Password: "admin",
 			},
@@ -159,10 +167,12 @@ func createServerContainer(pool *dockertest.Pool, network *dockertest.Network, l
 			SkipTLSVerify: true,
 			EmailField:    "email",
 		},
-		TOTP: configurationTotp{
+		TOTP: structures.TOTPConfig{
+			Kind: "db",
 			Secret: "AZERTYUIOPQSDFGHJKLMWXCVBN0123456789!",
+			OpenLDAPParamsDN: "cn=otp,dc=localhost,dc=priv",
 		},
-		MailServer: configurationMail{
+		MailServer: structures.MailServerConfig{
 			Address:       "172.17.0.1",
 			Port:          mailPortInt,
 			Password:      "",
@@ -179,7 +189,7 @@ func createServerContainer(pool *dockertest.Pool, network *dockertest.Network, l
 		return nil, err
 	}
 
-	data, _ := json.Marshal(configuration)
+	data, _ := json.Marshal(config)
 	err = os.WriteFile(path+"/configuration.json", data, 0777)
 	if err != nil {
 		return nil, err
@@ -204,46 +214,7 @@ func deleteContainer(pool *dockertest.Pool, container *dockertest.Resource) erro
 	return nil
 }
 
-// ---- LDAP Configuration
-
 // ---- Structures
-
-type configuration struct {
-	LDAPServer   configurationLdap `json:"ldap_server"`
-	TOTP         configurationTotp `json:"totp"`
-	MailServer   configurationMail `json:"mail_server"`
-	FrontAddress string            `json:"front_address"`
-}
-
-type configurationLdap struct {
-	Admin         configurationLdapAdmin `json:"admin"`
-	BaseDN        string                 `json:"base_dn"`
-	FilterOn      string                 `json:"filter_on"`
-	Address       string                 `json:"address"`
-	Port          int                    `json:"port"`
-	Kind          string                 `json:"kind"`
-	SkipTLSVerify bool                   `json:"skip_tls_verify"`
-	EmailField    string                 `json:"email_field"`
-}
-
-type configurationLdapAdmin struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type configurationTotp struct {
-	Secret string `json:"secret"`
-}
-
-type configurationMail struct {
-	Address       string `json:"address"`
-	Port          int    `json:"port"`
-	Password      string `json:"password"`
-	SenderAddress string `json:"sender_address"`
-	SenderName    string `json:"sender_name"`
-	Subject       string `json:"subject"`
-	SkipTLSVerify bool   `json:"skip_tls_verify"`
-}
 
 type email struct {
 	Text       string    `json:"text"`
