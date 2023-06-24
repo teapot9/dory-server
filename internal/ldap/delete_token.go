@@ -48,7 +48,7 @@ func DeleteToken(userDN string) error {
 		log.Info(msg)
 		return &structures.CustomError{Text: msg, HttpCode: 404}
 	} else {
-		log.Infof("found the otp thing: %v", helpers.FindAttribute(user, "oathSecret"))
+		log.Debug("found the oathSecret attribute")
 	}
 
 	// Build LDAP request
