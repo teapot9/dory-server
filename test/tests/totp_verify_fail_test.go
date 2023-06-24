@@ -14,7 +14,9 @@ func TestVerifyFail(t *testing.T) {
 
 	data := user{
 		Username: "testuser",
-		Password: "test",
+		Authentication: authentication{
+			Password: "test",
+		},
 	}
 
 	marshaled, _ := json.Marshal(data)
@@ -49,7 +51,9 @@ func TestVerifyFail(t *testing.T) {
 
 	data = user{
 		Username: "testuser",
-		Password: "test",
+		Authentication: authentication{
+			Password: "test",
+		},
 	}
 
 	marshaled, _ = json.Marshal(data)

@@ -54,7 +54,7 @@ func TestReinitialize(t *testing.T) {
 	var mails []email
 	_ = json.Unmarshal(response, &mails)
 
-	resetToken := strings.Split(strings.Split(mails[0].TextAsHtml, "https://localhost:8001/reinitialize?user=testuser&amp;token=")[1], "\"")[0]
+	resetToken := strings.Split(strings.Split(mails[0].TextAsHtml, "https://localhost:8001/reinitialize?user=testuser&amp;type=mail&amp;token=")[1], "\"")[0]
 
 	// Update password to check that token is valid
 	// Send request for valid user

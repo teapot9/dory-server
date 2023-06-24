@@ -29,8 +29,12 @@ func RevokeTOTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Check that all fields we need are present
-	if user.Username == "" || user.Password == "" {
+	if user.Username == "" {
 		http.Error(w, "Incomplete payload.", http.StatusBadRequest)
+		return
+	}
+	if user.Authentication.Password == "" && user.Authentication.Token == "" {
+		http.Error(w, "Missing authentication.", http.StatusUnauthorized)
 		return
 	}
 

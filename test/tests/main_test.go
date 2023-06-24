@@ -247,6 +247,7 @@ type totpStruct struct {
 }
 
 type authentication struct {
-	Token string `json:"token"`
-	TOTP  string `json:"totp"`
+	Token    string `json:"token"`
+	TOTP     string `json:"totp"`
+	Password string `json:"password"`
 }

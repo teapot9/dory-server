@@ -71,12 +71,12 @@
                     <td>
                         <p>Bonjour, {{.Name}}</p>
                         <p>Vous avez demandé le déverrouillage de votre compte sur {{.LDAP}}. Pour continuez la
-                            procédure, cliquez ici : <a href="{{.URL}}unlock?user={{.Username}}&token={{.Token}}">{{.URL}}unlock?user={{.Username}}&token={{.Token}}</a>.
+                            procédure, cliquez ici : <a href="{{.URL}}unlock?user={{.Username}}&type=mail&token={{.Token}}">{{.URL}}unlock?user={{.Username}}&type=mail&token={{.Token}}</a>.
                         </p>
                         <p>Cordialement,</p>
                         <hr>
                         <p>Hi, {{.Name}}</p>
-                        <p>You asked to unlock your account on {{.LDAP}}. To complete this action, click here: <a href="{{.URL}}unlock?user={{.Username}}&token={{.Token}}">{{.URL}}unlock?user={{.Username}}&token={{.Token}}</a>.
+                        <p>You asked to unlock your account on {{.LDAP}}. To complete this action, click here: <a href="{{.URL}}unlock?user={{.Username}}&type=mail&token={{.Token}}">{{.URL}}unlock?user={{.Username}}&type=mail&token={{.Token}}</a>.
                         </p>
                         <p>Cordially,</p>
                         <br/>

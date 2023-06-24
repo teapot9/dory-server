@@ -25,7 +25,9 @@ func TestTOTPOpenLDAP(t *testing.T) {
 
 	data := user{
 		Username: "otpuser-disabled",
-		Password: "test",
+		Authentication: authentication{
+			Password: "test",
+		},
 	}
 
 	marshaled, _ := json.Marshal(data)
@@ -68,7 +70,9 @@ func TestTOTPOpenLDAP(t *testing.T) {
 
 	data = user{
 		Username: "otpuser-disabled",
-		Password: "test" + totpcode,
+		Authentication: authentication{
+			Password: "test" + totpcode,
+		},
 	}
 
 	marshaled, _ = json.Marshal(data)

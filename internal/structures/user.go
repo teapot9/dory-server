@@ -16,8 +16,9 @@ type UserReinitialize struct {
 }
 
 type Authentication struct {
-	Token string `json:"token"`
-	TOTP  string `json:"totp"`
+	Token    string `json:"token"`
+	TOTP     string `json:"totp"`
+	Password string `json:"password"`
 }
 
 type UserChangePassword struct {
@@ -27,8 +28,8 @@ type UserChangePassword struct {
 }
 
 type UserCreateTOTP struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username       string         `json:"username"`
+	Authentication Authentication `json:"authentication"`
 }
 
 type UserVerifyTOTP struct {

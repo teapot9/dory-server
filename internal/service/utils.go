@@ -23,6 +23,14 @@ func checkAuth(username string, authentication structures.Authentication) (bool,
 		}
 		return totp.VerifyTOTP(userDn, authentication.TOTP)
 	}
+	if authentication.Password != "" {
+		validPassword, err := ldap.IsPasswordValid(username, authentication.Password)
+		if err != nil {
+			return false, err
+		} else {
+			return validPassword, nil
+		}
+	}
 
 	return false, errors.New("not implemented")
 }
