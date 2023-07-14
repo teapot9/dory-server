@@ -43,7 +43,7 @@ func DeleteToken(userDN string) error {
 		log.Warnf("could not find user %s: %v", userDN, err)
 		return err
 	}
-	if len(helpers.FindAttribute(user, "oathSecret")) == 0 {
+	if len(helpers.FindAttribute(user, "oathTOTPToken")) == 0 {
 		msg := fmt.Sprintf("TOTP is not configured for %s", userDN)
 		log.Info(msg)
 		return &structures.CustomError{Text: msg, HttpCode: 404}
