@@ -2,6 +2,7 @@ package tests
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -10,6 +11,7 @@ import (
 	"testing"
 	"time"
 	"github.com/ory/dockertest/v3"
+	"github.com/ory/dockertest/v3/docker"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/be-ys-cloud/dory-server/internal/structures"
 	"github.com/be-ys-cloud/dory-server/test/helpers"
@@ -195,12 +197,20 @@ func createServerContainer(pool *dockertest.Pool, network *dockertest.Network, l
 		return nil, err
 	}
 
+	port, err := helpers.GetFreePortTCP()
+	if err != nil {
+		return nil, err
+	}
+
 	return pool.BuildAndRunWithOptions(strings.TrimSuffix(path, "/test/tests")+"/Dockerfile", &dockertest.RunOptions{
 		Name:     "dory_base_test",
 		Tag:      "latest",
 		Networks: []*dockertest.Network{network},
 		Mounts: []string{
 			path + "/configuration.json:/app/configuration.json",
+		},
+		PortBindings: map[docker.Port][]docker.PortBinding{
+			"8000/tcp": {{ HostPort: fmt.Sprintf("%d", port) }},
 		},
 	})
 }
