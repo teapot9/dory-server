@@ -153,7 +153,7 @@ func createServerContainer(pool *dockertest.Pool, network *dockertest.Network, l
 			},
 			BaseDN:        "dc=localhost,dc=priv",
 			FilterOn:      "(&(objectClass=person)(cn=%s))",
-			Address:       "172.17.0.1",
+			Address:       "host.docker.internal",
 			Port:          ldapPortInt,
 			Kind:          "openldap",
 			SkipTLSVerify: true,
@@ -163,7 +163,7 @@ func createServerContainer(pool *dockertest.Pool, network *dockertest.Network, l
 			Secret: "AZERTYUIOPQSDFGHJKLMWXCVBN0123456789!",
 		},
 		MailServer: configurationMail{
-			Address:       "172.17.0.1",
+			Address:       "host.docker.internal",
 			Port:          mailPortInt,
 			Password:      "",
 			SenderAddress: "noreply@dory.localhost",
@@ -191,6 +191,9 @@ func createServerContainer(pool *dockertest.Pool, network *dockertest.Network, l
 		Networks: []*dockertest.Network{network},
 		Mounts: []string{
 			path + "/configuration.json:/app/configuration.json",
+		},
+		ExtraHosts: []string{
+			"host.docker.internal:host-gateway",
 		},
 	})
 }
