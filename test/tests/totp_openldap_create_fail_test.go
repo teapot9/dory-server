@@ -25,7 +25,9 @@ func TestFailCreateTOTPOpenLDAP(t *testing.T) {
 	t.Run("create with bad password", func(t *testing.T) {
 		data := user{
 			Username: "otpuser-disabled",
-			Password: "badpassword",
+			Authentication: authentication{
+				Password: "badpassword",
+			},
 		}
 
 		marshaled, _ := json.Marshal(data)
@@ -43,7 +45,9 @@ func TestFailCreateTOTPOpenLDAP(t *testing.T) {
 
 		data := user{
 			Username: "otpuser-enabled",
-			Password: "test" + totpcode,
+			Authentication: authentication{
+				Password: "test" + totpcode,
+			},
 		}
 
 		marshaled, _ := json.Marshal(data)

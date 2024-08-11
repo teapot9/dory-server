@@ -29,7 +29,7 @@ func CreateTOTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Check that all fields we need are present
-	if user.Username == "" || user.Password == "" {
+	if user.Username == "" || user.Authentication.Password == "" {
 		http.Error(w, "Incomplete payload.", http.StatusBadRequest)
 		return
 	}

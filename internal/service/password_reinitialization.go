@@ -11,12 +11,16 @@ import (
 
 func ReinitializePassword(user structures.UserReinitialize) error {
 	//Check that token is valid
-	if valid, err := checkAuth(user.Username, user.Authentication); !valid || err != nil {
-		return &structures.CustomError{Text: "bad authentication provided", HttpCode: 401}
+	valid, err := checkAuth(user.Username, user.Authentication)
+	if err != nil {
+		return &structures.CustomError{HttpCode: 401, Text: err.Error()}
+	}
+	if !valid {
+		return &structures.CustomError{HttpCode: 401, Text: "invalid authentication"}
 	}
 
 	//Token is valid, now modifying password !
-	err := ldap.ReinitializePassword(user.Username, user.NewPassword)
+	err = ldap.ReinitializePassword(user.Username, user.NewPassword)
 	if err != nil {
 		logrus.Warnf("Error while reinitializing password for user %s. Error was: %s", user.Username, err.Error())
 		return &structures.CustomError{Text: "an error occurred while reinitializing password", HttpCode: 500}

@@ -12,12 +12,12 @@ import (
 
 func CreateTOTP(user structures.UserCreateTOTP) (structures.TOTPToken, error) {
 
-	validPassword, err := ldap.IsPasswordValid(user.Username, user.Password)
+	valid, err := checkAuth(user.Username, user.Authentication)
 	if err != nil {
 		return structures.TOTPToken{}, &structures.CustomError{HttpCode: 401, Text: err.Error()}
 	}
-	if !validPassword {
-		return structures.TOTPToken{}, &structures.CustomError{HttpCode: 401, Text: err.Error()}
+	if !valid {
+		return structures.TOTPToken{}, &structures.CustomError{HttpCode: 401, Text: "invalid authentication"}
 	}
 
 	userDN, err := ldap.GetUserDN(user.Username)

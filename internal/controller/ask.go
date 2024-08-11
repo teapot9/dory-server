@@ -25,13 +25,14 @@ func Ask(w http.ResponseWriter, r *http.Request) {
 	kind := vars["kind"]
 
 	// Check kind & feature flipping
-	if kind != "unlock" && kind != "reinitialize" {
+	if kind != "unlock" && kind != "reinitialize" && kind != "revoke" {
 		w.WriteHeader(404)
 		return
 	}
 
 	if (kind == "unlock" && configuration.Configuration.Features.DisableUnlock) ||
-		(kind == "reinitialize" && configuration.Configuration.Features.DisablePasswordReinitialization) {
+		(kind == "reinitialize" && configuration.Configuration.Features.DisablePasswordReinitialization) ||
+		(kind == "revoke" && configuration.Configuration.Features.DisableTOTP) {
 		w.WriteHeader(404)
 		return
 	}

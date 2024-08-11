@@ -70,11 +70,14 @@
                 <tr>
                     <td>
                         <p>Bonjour, {{.Name}}</p>
-                        <p>Vous avez demandé la réinitialisation de votre mot de passe sur {{.LDAP}}. Pour continuez la procédure, cliquez ici : <a href="{{.URL}}reinitialize?user={{.Username}}&type=mail&token={{.Token}}">{{.URL}}reinitialize?user={{.Username}}&type=mail&token={{.Token}}</a>.</p>
+                        <p>Vous avez demandé la suppression des codes OTP de votre compte sur {{.LDAP}}. Pour continuez la
+                            procédure, cliquez ici : <a href="{{.URL}}revoke?user={{.Username}}&type=mail&token={{.Token}}">{{.URL}}revoke?user={{.Username}}&type=mail&token={{.Token}}</a>.
+                        </p>
                         <p>Cordialement,</p>
                         <hr>
                         <p>Hi, {{.Name}}</p>
-                        <p>You asked to reinitialize your password on {{.LDAP}}. To complete this action, click here: <a href="{{.URL}}reinitialize?user={{.Username}}&type=mail&token={{.Token}}">{{.URL}}reinitialize?user={{.Username}}&type=mail&token={{.Token}}</a>.</p>
+                        <p>You asked the removal of OTP codes from your account on {{.LDAP}}. To complete this action, click here: <a href="{{.URL}}revoke?user={{.Username}}&type=mail&token={{.Token}}">{{.URL}}revoke?user={{.Username}}&type=mail&token={{.Token}}</a>.
+                        </p>
                         <p>Cordially,</p>
                         <br/>
                         <p><i>Ce mail est destiné à {{.Name}}. Si vous recevez ce message par erreur, merci de ne pas en

@@ -14,7 +14,9 @@ func TestRevokeFail(t *testing.T) {
 
 	data := user{
 		Username: "testuser",
-		Password: "test",
+		Authentication: authentication{
+			Password: "test",
+		},
 	}
 
 	marshaled, _ := json.Marshal(data)
@@ -32,7 +34,9 @@ func TestRevokeFail(t *testing.T) {
 
 	data = user{
 		Username: "testuser",
-		Password: "badpass",
+		Authentication: authentication{
+			Password: "badpass",
+		},
 	}
 
 	marshaled, _ = json.Marshal(data)
@@ -50,7 +54,9 @@ func TestRevokeFail(t *testing.T) {
 
 	data = user{
 		Username: "testuser",
-		Password: "test",
+		Authentication: authentication{
+			Password: "test",
+		},
 	}
 
 	marshaled, _ = json.Marshal(data)

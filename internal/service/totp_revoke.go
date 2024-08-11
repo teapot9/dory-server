@@ -11,12 +11,13 @@ import (
 
 func RevokeTOTP(user structures.UserCreateTOTP) error {
 
-	validPassword, err := ldap.IsPasswordValid(user.Username, user.Password)
+	// Check authentication
+	valid, err := checkAuth(user.Username, user.Authentication)
 	if err != nil {
 		return &structures.CustomError{HttpCode: 401, Text: err.Error()}
 	}
-	if !validPassword {
-		return &structures.CustomError{HttpCode: 401, Text: "Invalid password"}
+	if !valid {
+		return &structures.CustomError{HttpCode: 401, Text: "invalid authentication"}
 	}
 
 	userDN, err := ldap.GetUserDN(user.Username)

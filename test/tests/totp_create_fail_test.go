@@ -14,7 +14,9 @@ func TestFailCreateTOTP(t *testing.T) {
 
 	data := user{
 		Username: "testuser",
-		Password: "badpassword",
+		Authentication: authentication{
+			Password: "badpassword",
+		},
 	}
 
 	marshaled, _ := json.Marshal(data)
