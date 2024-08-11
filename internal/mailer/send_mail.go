@@ -58,21 +58,24 @@ func SendMail(templateName string, destEmail string, args interface{}) error {
 
 // Reimplementing native sendMail to add certificate bypass on demand.
 func sendMail(a smtp.Auth, from string, to []string, msg []byte) error {
-	c, err := smtp.Dial(configuration.Configuration.MailServer.Address + ":" + strconv.Itoa(configuration.Configuration.MailServer.Port))
+	var c *smtp.Client
+	var err error
 
+	switch configuration.Configuration.MailServer.TLSMode {
+	case structures.TLSModeNone:
+		c, err = smtpPlain()
+	case structures.TLSModeSTARTTLS:
+		c, err = smtpStartTLS()
+	case structures.TLSModeTLS:
+		c, err = smtpImplicitTLS()
+	default:
+		logrus.Errorf("invalid value for SMTP TLS mode: %s, using default STARTTLS", configuration.Configuration.MailServer.TLSMode)
+		c, err = smtpStartTLS()
+	}
 	if err != nil {
 		return err
 	}
-	if ok, _ := c.Extension("STARTTLS"); ok {
-		config := &tls.Config{
-			InsecureSkipVerify: configuration.Configuration.MailServer.SkipTLSVerify,
-		}
 
-		if err = c.StartTLS(config); err != nil {
-			return err
-		}
-
-	}
 	if a != nil {
 		if ok, _ := c.Extension("AUTH"); ok {
 			if err = c.Auth(a); err != nil {
@@ -101,4 +104,60 @@ func sendMail(a smtp.Auth, from string, to []string, msg []byte) error {
 		return err
 	}
 	return c.Quit()
+}
+
+func smtpPlain() (c *smtp.Client, err error) {
+	// Create client
+	server := configuration.Configuration.MailServer.Address + ":" + strconv.Itoa(configuration.Configuration.MailServer.Port)
+	c, err = smtp.Dial(server)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func smtpStartTLS() (c *smtp.Client, err error) {
+	c, err = smtpPlain()
+	if err != nil {
+		return
+	}
+
+	// Check STARTTLS
+	if ok, _ := c.Extension("STARTTLS"); !ok {
+		logrus.Error("STARTTLS is not supported by the server, plain SMTP will be used")
+		return
+	}
+
+	// Establish TLS
+	config := &tls.Config{
+		InsecureSkipVerify: configuration.Configuration.MailServer.SkipTLSVerify,
+		ServerName: configuration.Configuration.MailServer.Address,
+	}
+	if err = c.StartTLS(config); err != nil {
+		return
+	}
+
+	return
+}
+
+func smtpImplicitTLS() (c *smtp.Client, err error) {
+	// Establish TLS
+	config := &tls.Config{
+		InsecureSkipVerify: configuration.Configuration.MailServer.SkipTLSVerify,
+		ServerName: configuration.Configuration.MailServer.Address,
+	}
+	server := configuration.Configuration.MailServer.Address + ":" + strconv.Itoa(configuration.Configuration.MailServer.Port)
+	conn, err := tls.Dial("tcp", server, config)
+	if err != nil {
+		return
+	}
+
+	// Create client
+	c, err = smtp.NewClient(conn, configuration.Configuration.MailServer.Address)
+	if err != nil {
+		return
+	}
+
+	return
 }

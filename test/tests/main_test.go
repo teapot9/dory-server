@@ -2,8 +2,6 @@ package tests
 
 import (
 	"encoding/json"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/ory/dockertest/v3"
 	"log"
 	"os"
 	"os/exec"
@@ -11,6 +9,10 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/be-ys-cloud/dory-server/internal/structures"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/ory/dockertest/v3"
 )
 
 var baseUrl string
@@ -170,6 +172,7 @@ func createServerContainer(pool *dockertest.Pool, network *dockertest.Network, l
 			SenderName:    "Dory",
 			Subject:       "LDAP Account Management",
 			SkipTLSVerify: true,
+			TLSMode:       structures.TLSModeNone,
 		},
 		FrontAddress: "https://localhost:8001/",
 	}
@@ -243,6 +246,7 @@ type configurationMail struct {
 	SenderName    string `json:"sender_name"`
 	Subject       string `json:"subject"`
 	SkipTLSVerify bool   `json:"skip_tls_verify"`
+	TLSMode structures.TLSMode `json:"tls_mode"`
 }
 
 type email struct {

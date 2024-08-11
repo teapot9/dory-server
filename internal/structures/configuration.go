@@ -1,5 +1,12 @@
 package structures
 
+type TLSMode string
+const (
+	TLSModeNone = "none"
+	TLSModeSTARTTLS = "starttls"
+	TLSModeTLS = "tls"
+)
+
 type Configuration struct {
 	LDAPServer struct {
 		Admin struct {
@@ -24,13 +31,14 @@ type Configuration struct {
 		Secret            string `json:"secret"`
 	} `json:"totp"`
 	MailServer struct {
-		Address       string `json:"address"`
-		Port          int    `json:"port"`
-		Password      string `json:"password"`
-		SenderAddress string `json:"sender_address"`
-		SenderName    string `json:"sender_name"`
-		Subject       string `json:"subject"`
-		SkipTLSVerify bool   `json:"skip_tls_verify"`
+		Address       string  `json:"address"`
+		Port          int     `json:"port"`
+		Password      string  `json:"password"`
+		SenderAddress string  `json:"sender_address"`
+		SenderName    string  `json:"sender_name"`
+		Subject       string  `json:"subject"`
+		SkipTLSVerify bool    `json:"skip_tls_verify"`
+		TLSMode       TLSMode `json:"tls_mode"`
 	} `json:"mail_server"`
 	FrontAddress string   `json:"front_address"`
 	Features     Features `json:"features"`
