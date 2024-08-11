@@ -65,4 +65,20 @@ func init() {
 			Database = getDatabaseConnection()
 		}
 	}
+
+	// If SMTP TLS mode is undefined, try to guess its value
+	if Configuration.MailServer.TLSMode == "" {
+		switch Configuration.MailServer.Port {
+		case 25:
+			Configuration.MailServer.TLSMode = structures.TLSModeNone
+		case 465:
+			Configuration.MailServer.TLSMode = structures.TLSModeTLS
+		case 587:
+			Configuration.MailServer.TLSMode = structures.TLSModeSTARTTLS
+		default:
+			logrus.Warnf("unknown TLS mode for port %d, using default STARTTLS", Configuration.MailServer.Port)
+			Configuration.MailServer.TLSMode = structures.TLSModeSTARTTLS
+		}
+		logrus.Debugf("guessed TLS mode for port %d: %s", Configuration.MailServer.Port, Configuration.MailServer.TLSMode)
+	}
 }

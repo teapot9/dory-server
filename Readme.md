@@ -49,6 +49,7 @@ Must be name `configuration.json`. Content :
     "password": "Password (if any) to authenticate",
     "subject": "DORY",
     "skip_tls_verify": true,
+    "tls_mode": "none",
     "sender_name": "DORY"
   },
   "front_address": "https://dory.local/"
@@ -63,6 +64,9 @@ Must be name `configuration.json`. Content :
   *  `secret` : Must be a secret string, known only by server, which is at least 25 characters long. **Losing or changing this key will make all TOTP unusable !**
   * `custom_service_name` : Change the default value (which is `DORY - your_ldap_address`) to a custom value. Only useful for display.
 * `features` : Allow users to disable some features of the tool. By default, all features are enabled (except `unlock` feature on OpenLDAP).
+* `mail_server`: Configures the mail server to send mails
+  * `tls_mode`: Must be either `none`, `starttls`, `tls` or undefined (default is guessed from port, falling back to STARTTLS).
+    If STARTTLS fails, an error is logged and the mail is sent using plain SMTP.
 
 **Important note:** When using TOTP, this server **requires** a SQLite backend to store user-specific secrets.
 
