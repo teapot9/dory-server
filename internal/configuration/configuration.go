@@ -53,6 +53,9 @@ func init() {
 
 	// If TOTP is enabled, check that secret is not "" and have a decent length, and populate default name
 	if !Configuration.Features.DisableTOTP {
+		if Configuration.TOTP.Kind != "db" && Configuration.TOTP.Kind != "openldap" {
+			logrus.Fatalf("%s: unsupported TOTP kind, must be \"db\" or \"openldap\"\n", Configuration.TOTP.Kind)
+		}
 		if Configuration.TOTP.CustomServiceName == "" {
 			Configuration.TOTP.CustomServiceName = "DORY " + Configuration.LDAPServer.Address
 		}

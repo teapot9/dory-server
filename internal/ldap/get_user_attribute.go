@@ -30,14 +30,17 @@ func GetUserMail(username string) (string, error) {
 		return "", err
 	}
 
-	for i := range user.Attributes {
-		if user.Attributes[i].Name == configuration.Configuration.LDAPServer.EmailField {
-			if user.Attributes[i].Values[0] == "" {
-				return "", &structures.CustomError{Text: "field is empty", HttpCode: 500}
-			}
-			return user.Attributes[i].Values[0], nil
+	// Get mail attribute
+	values := helpers.FindAttribute(user, configuration.Configuration.LDAPServer.EmailField)
+	if len(values) == 0 {
+		return "", &structures.CustomError{
+			Text: configuration.Configuration.LDAPServer.EmailField + " not found on this user",
+			HttpCode: 500,
 		}
 	}
+	if values[0] == "" {
+		return "", &structures.CustomError{Text: "field is empty", HttpCode: 500}
+	}
+	return values[0], nil
 
-	return "", &structures.CustomError{Text: configuration.Configuration.LDAPServer.EmailField + " not found on this user", HttpCode: 500}
 }

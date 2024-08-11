@@ -25,6 +25,9 @@ func RevokeTOTP(user structures.UserCreateTOTP) error {
 	}
 
 	err = totp.DeleteTOTP(userDN)
+	if err != nil {
+		return err
+	}
 
 	// Send email
 	email, err := ldap.GetUserMail(user.Username)

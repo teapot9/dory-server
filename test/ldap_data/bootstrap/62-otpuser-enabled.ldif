@@ -1,0 +1,17 @@
+#type: add
+#db: dc=localhost,dc=priv
+dn: cn=otpuser-enabled,dc=localhost,dc=priv
+sn: Test User OTP (enabled)
+cn: otpuser-enabled
+objectClass: person
+objectClass: extensibleObject
+objectClass: simpleSecurityObject
+objectClass: oathUser
+objectClass: oathToken
+objectClass: oathTOTPUser
+objectClass: oathTOTPToken
+email: test@localhost.com
+userPassword: test
+oathTOTPToken: cn=otpuser-enabled,dc=localhost,dc=priv
+oathTOTPParams: cn=otp,dc=localhost,dc=priv
+oathSecret: totpsecret

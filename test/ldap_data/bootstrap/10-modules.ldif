@@ -5,3 +5,4 @@ changetype: modify
 add: olcModuleLoad
 olcModuleLoad: memberof.so
 olcModuleLoad: refint.so
+olcModuleLoad: otp.so
