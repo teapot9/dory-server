@@ -14,8 +14,8 @@ FROM alpine
 
 RUN mkdir /app
 
-COPY --from=0 /go/bin/dory /app/dory
-COPY templates/ /app/templates
+COPY --from=0 --chmod=0755 /go/bin/dory /app/dory
+COPY --chmod=0644 templates/* /app/templates/
 
 WORKDIR /app
 ENTRYPOINT ["./dory"]
